@@ -7,9 +7,8 @@ var debugText;
 var ground;
 var details;
 var tween;
-
-
-
+var jumper;
+var frame;
 
 
 
@@ -18,6 +17,7 @@ function preload() {
 	game.load.audio('music',['res/music.mp3','res/music.ogg']);
 	//game.load.image('tux', 'res/tux.png');
 	game.load.spritesheet('tux', 'res/sprite_teste.png', 67, 85, 6);
+	game.load.spritesheet('jumper', 'res/jumper.png', 12, 34, 3);
 	game.load.image('fundo', 'res/background2.jpg');
 	game.load.image('sign', 'res/sign.png');
 	game.load.image('profile', 'res/profile_icon.png');
@@ -44,12 +44,16 @@ function create() {
 	
 	platforms = game.add.group();	
 	platforms.enableBody =  true;
+	
+	jumpers = game.add.group();
+	jumpers.enableBody = true;
 		
 	objectsBackground = game.add.group();
 	objectsBackground.enableBody =  true;	
 	
 	
 	createPlatform();
+	createJumper(240,999);
 	var style = { font: "bold 20px arcade", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 
     //  The Text is positioned at 0, 100
@@ -93,6 +97,13 @@ function update() {
 	game.world.bringToTop(detailText);
 }
 
+function createJumper(x, y){
+	jumper = jumpers.create(x, y, 'jumper');
+	jumper.body.colliderWorldBounds = true;
+	jumper.animations.add('start',[2],11, true);
+	jumper.scale.setTo(2.5,3);
+	jumper.animations.play('start');
+}
 
 function createPlayer(x,y,j,v){
 	var player = players.create(x,y, 'tux');	
