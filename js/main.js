@@ -7,7 +7,7 @@ var debugText;
 var ground;
 var details;
 var tween;
-var jumper;
+var flyergap;
 var frame;
 
 
@@ -17,7 +17,7 @@ function preload() {
 	game.load.audio('music',['res/music.mp3','res/music.ogg']);
 	//game.load.image('tux', 'res/tux.png');
 	game.load.spritesheet('tux', 'res/sprite_teste.png', 67, 85, 6);
-	game.load.spritesheet('jumper', 'res/jumper.png', 12, 34, 3);
+	game.load.image('flyer_gap', 'res/flyergap.png');
 	game.load.image('fundo', 'res/background2.jpg');
 	game.load.image('sign', 'res/sign.png');
 	game.load.image('profile', 'res/profile_icon.png');
@@ -31,10 +31,10 @@ function preload() {
 
 function create() {
 	music = game.add.audio("music");
-	//music.play('',0,1,true);
+	music.play('',0,1,true);
 	
 	game.stage.backgroundColor = "#DDDDDD";
-	game.physics.startSystem(Phaser.Physics.ARCADE);
+	game.physics.startSystem(Phaser.Physics.P2JS);
 	
 	game.world.setBounds(0, 0, 1024, 1524);
 	game.add.tileSprite(0, 0, 1024, 1524, 'fundo');
@@ -45,15 +45,14 @@ function create() {
 	platforms = game.add.group();	
 	platforms.enableBody =  true;
 	
-	jumpers = game.add.group();
-	jumpers.enableBody = true;
+	
 		
 	objectsBackground = game.add.group();
 	objectsBackground.enableBody =  true;	
 	
 	
 	createPlatform();
-	createJumper(240,999);
+	createFlyerGap(329,954);
 	var style = { font: "bold 20px arcade", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 
     //  The Text is positioned at 0, 100
@@ -90,19 +89,18 @@ function move (){
 
 
 function update() {
-	playerUpdate();
+	playerUpdate();	
 	game.world.bringToTop(platforms);
 	game.world.bringToTop(players);
 	game.world.bringToTop(floatFrames);
 	game.world.bringToTop(detailText);
 }
 
-function createJumper(x, y){
-	jumper = jumpers.create(x, y, 'jumper');
-	jumper.body.colliderWorldBounds = true;
-	jumper.animations.add('start',[2],11, true);
-	jumper.scale.setTo(2.5,3);
-	jumper.animations.play('start');
+function createFlyerGap(x, y){
+	flyergap = platforms.create(x, y, 'flyer_gap');
+	flyergap.scale.setTo(2,2);
+	flyergap.body.colliderWorldBounds = true;
+	flyergap.body.immovable = true;
 }
 
 function createPlayer(x,y,j,v){
@@ -126,9 +124,20 @@ function createPlayer(x,y,j,v){
 }
 
 var y = 0;
+
+
 function playerUpdate(){
-	game.physics.arcade.collide(players, players);
-	game.physics.arcade.collide(players, platforms);	 
+	//game.physics.arcade.collide(players, flyergaps);
+	game.physics.arcade.collide(players, platforms, function(a, b){
+		if(b.key == 'flyer_gap'){
+			b.body.velocity.y = -60;
+			b.body.velocity.x = 20;	
+			if(Math.round(b.body.y)== 720){
+				b.body.velocity.y = 0;
+			}
+		}	
+		
+	});	 
 	players.forEach(function(p){
 		var jumping = false;
 		if(p.body.velocity.y < -0.9  || p.body.velocity.y > 10  ){
@@ -140,7 +149,7 @@ function playerUpdate(){
 		p.body.velocity.x = 0;
 		debugText.text = "{x:"+Math.round(p.x)+" | "+"y:"+Math.round(p.y)+" | frameY: "+Math.round(frame.y)+"}";
 		debugText.x = p.x - 280;
-		debugText.y = p.y-160;
+		debugText.y = p.y-160;	
 		
 		
 		if(p.x > 703 && p.x < 801){
@@ -167,8 +176,6 @@ function playerUpdate(){
 			}else if(y > 1001){
 				y = 0;				
 			}
-			
-			
 			y++;
 			showFrame(p,[100, 180], 237, "         Experiencias\r\n", exp);	
 		}
@@ -179,8 +186,7 @@ function playerUpdate(){
 				hit = 0;
 			}
 			bmpText.text = ""; 
-			details.onDown.remove(move, this);
-			
+			details.onDown.remove(move, this);			
 		}
 		
 		if(cursors.left.isDown){
