@@ -133,7 +133,7 @@ function playerUpdate(){
 			b.body.velocity.y = -60;
 			b.body.velocity.x = 20;	
 			if(Math.round(b.body.y)== 720){
-				b.body.velocity.y = 0;
+				b.body.velocity.y = 0;				
 			}
 		}	
 		
