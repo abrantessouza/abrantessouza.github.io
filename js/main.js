@@ -1,5 +1,4 @@
-var game = new Phaser.Game(800, 500, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-
+var game = new Phaser.Game(800 , 600, Phaser.CANVAS, '', { preload: preload, create: create, update: update });
 var cursors;
 var players;
 var player;
@@ -9,6 +8,11 @@ var details;
 var tween;
 var flyergap;
 var frame;
+var fan_flyer;
+var langs;
+var ff1;
+var ff2;
+var ff3;
 
 
 
@@ -17,7 +21,9 @@ function preload() {
 	game.load.audio('music',['res/music.mp3','res/music.ogg']);
 	//game.load.image('tux', 'res/tux.png');
 	game.load.spritesheet('tux', 'res/sprite_teste.png', 67, 85, 6);
+	game.load.spritesheet('flyer_fan', 'res/fan_flyers.png', 69.5, 49, 6);
 	game.load.image('flyer_gap', 'res/flyergap.png');
+	game.load.image('languages', 'res/languages.png');
 	game.load.image('fundo', 'res/background2.jpg');
 	game.load.image('sign', 'res/sign.png');
 	game.load.image('profile', 'res/profile_icon.png');
@@ -34,16 +40,22 @@ function create() {
 	music.play('',0,1,true);
 	
 	game.stage.backgroundColor = "#DDDDDD";
+	game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
+	//game.scale.setGameSize(1200, 600);
+
 	game.physics.startSystem(Phaser.Physics.P2JS);
 	
 	game.world.setBounds(0, 0, 1024, 1524);
 	game.add.tileSprite(0, 0, 1024, 1524, 'fundo');
 	players = game.add.group();
 	players.enableBody = true;
-	createPlayer(15,5, -300, 150);		
+	createPlayer(15,1300, -300, 150);		
 	
 	platforms = game.add.group();	
 	platforms.enableBody =  true;
+	
+	fan_flyers = game.add.group();
+	fan_flyers.enableBody = true;
 	
 	
 		
@@ -52,7 +64,14 @@ function create() {
 	
 	
 	createPlatform();
-	createFlyerGap(329,954);
+	createFlyerGap(0,950);
+	ff1 = createFanFlyer(695, 750);
+	ff2 = createFanFlyer(695 + 90, 750);	
+	ff3 = createFanFlyer(695 + 90 * 2, 750);	
+	
+		
+		
+			
 	var style = { font: "bold 20px arcade", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 
     //  The Text is positioned at 0, 100
@@ -74,6 +93,9 @@ function create() {
 	frame.scale.setTo(1.68,4.3);
 	
 	details = game.input.keyboard.addKey(Phaser.Keyboard.D);	
+	
+	langs = game.add.sprite(200,  -600, 'languages');
+	langs.scale.setTo(1.38);
 }
 
 var hit  = 0;
@@ -90,9 +112,11 @@ function move (){
 
 function update() {
 	playerUpdate();	
+	game.world.bringToTop(langs);
 	game.world.bringToTop(platforms);
 	game.world.bringToTop(players);
-	game.world.bringToTop(floatFrames);
+	game.world.bringToTop(fan_flyers);
+	game.world.bringToTop(floatFrames);	
 	game.world.bringToTop(detailText);
 }
 
@@ -101,11 +125,22 @@ function createFlyerGap(x, y){
 	flyergap.scale.setTo(2,2);
 	flyergap.body.colliderWorldBounds = true;
 	flyergap.body.immovable = true;
+	return flyergap;
+}
+
+function createFanFlyer(x, y){
+	fan_flyer = fan_flyers.create(x, y, 'flyer_fan');
+	fan_flyer.body.collideWorldBounds = true;
+	fan_flyer.body.immovable = true;
+	fan_flyer.animations.add('fan', [0,1,2], 15, true);
+	fan_flyer.animations.play('fan');
+	fan_flyer.scale.setTo(1.5, 1.5);
+	return fan_flyer;
 }
 
 function createPlayer(x,y,j,v){
 	var player = players.create(x,y, 'tux');	
-	player.body.bounce.y = 0.2;
+	player.body.bounce.y = 0;
 	player.body.gravity.y = 300;
 	player.body.collideWorldBounds = true
 	
@@ -125,19 +160,80 @@ function createPlayer(x,y,j,v){
 
 var y = 0;
 
+var tmp = 0;
+var hit_platflyer = false;
+var hit_fan = false;
+var teste;
+
+function movePlatFlyer(){
+	if(tmp == 0){
+		var tween = game.add.tween(teste).to( { x: 0,y: 950 }, 1000, Phaser.Easing.Linear.None, true);		
+		tween.onComplete.add(function() { 
+			tmp = 0;			
+		});
+	}	
+	tmp = 1;	
+}
+
+function moveLangs(){
+	if(tmp == 0){
+		var tween = game.add.tween(langs).to( { y:210 }, 500, Phaser.Easing.Linear.None, true);		
+		tween.onComplete.add(function() { 
+			tmp = 0;			
+		});
+	}	
+	tmp = 1;	
+	//console.log(tmp);
+}
+
+
+
 
 function playerUpdate(){
-	//game.physics.arcade.collide(players, flyergaps);
-	game.physics.arcade.collide(players, platforms, function(a, b){
-		if(b.key == 'flyer_gap'){
-			b.body.velocity.y = -60;
-			b.body.velocity.x = 20;	
-			if(Math.round(b.body.y)== 720){
-				b.body.velocity.y = 0;				
-			}
-		}	
+
+	game.physics.arcade.collide(players, fan_flyers, function(p, f){
+		hit_platflyer =  false;
 		
-	});	 
+		ff1.body.velocity.y = -25;
+		ff2.body.velocity.y = -20;
+		ff3.body.velocity.y = -15;
+		
+	});
+ 	game.physics.arcade.collide(players, platforms, function(a, b){
+		if(b.key == 'flyer_gap'){
+			teste = b;			
+			hit_platflyer = true;
+			b.body.velocity.y = -100;
+			b.body.velocity.x = 100;			
+			if(Math.round(b.body.y) < 750 ){
+				b.body.velocity.y = 0;
+				if(Math.round(b.body.x) > 480){
+					hit_fan = true;
+					b.body.velocity.x = 0;				
+				}			    
+			}			
+		}else{
+			hit_platflyer = false;
+		}	
+	});	
+	
+	if(hit_fan){
+		try{
+			moveLangs();
+		}catch(e){}
+	}
+	
+	if(!hit_platflyer){
+		try{
+			teste.body.velocity.x =0;
+			teste.body.velocity.y = 0;
+			movePlatFlyer();
+		}catch(e){
+		}
+		
+	}
+	
+		
 	players.forEach(function(p){
 		var jumping = false;
 		if(p.body.velocity.y < -0.9  || p.body.velocity.y > 10  ){
@@ -149,20 +245,21 @@ function playerUpdate(){
 		p.body.velocity.x = 0;
 		debugText.text = "{x:"+Math.round(p.x)+" | "+"y:"+Math.round(p.y)+" | frameY: "+Math.round(frame.y)+"}";
 		debugText.x = p.x - 280;
-		debugText.y = p.y-160;	
+		debugText.y = p.y-160;
 		
 		
-		if(p.x > 703 && p.x < 801){
-			movY = 650;
-			frame.x = p.x - 500;
-			showFrame(p,[703, 801], 479,"           SOBRE MIM\r\n", "\n31 anos, Brasileiro, Carioca \nda Gema, Casado e amante\nde tecnologia." );		
-		}else if(p.x > 300 && p.x < 418){
-			movY = 600;
+		
+		if(p.x > 647 && p.x < 801){
+			movY = 1400;
 			frame.x = p.x - 300;
-			showFrame(p,[300, 418], 377, "      Aonde sou graduado\r\n", "\n*UNESA: Tecnologia em \nInformatica p/ Internet (2015)\n\n*UNESA: Bacharel em \nTurismo (2010) " );		
+			showFrame(p,[647, 801], 1241,"           SOBRE MIM\r\n", "\nSou Thiago Abrantes e tenho \n31 anos, Brasileiro, Carioca \nda Gema, Casado e amante\nde tecnologia." );		
+		}else if(p.x > 300 && p.x < 418){
+			movY = 1300;
+			frame.x = p.x - 300;
+			showFrame(p,[300, 418], 1139, "      Aonde sou graduado\r\n", "\n*UNESA: Tecnologia em \nInformatica p/ Internet (2015)\n\n*UNESA: Bacharel em \nTurismo (2010) " );		
 		}
 		else if(p.x > 100 && p.x < 180){			
-			movY = 500;
+			movY = 1200;
 			frame.x = p.x - 80;
 			var textExp1 = "\n*LABORATORIO DE CONTROLE DE \n DOPAGEM(LBCD) [2011 - 2016]\n-Web Developer Front-End & \n Backend p/ intranet \n-Treinamento de pessoal \n para utilizacao dos sistemas \n-Montagem & Manutencao de \n Micro-Computadores   1/2";
 			var textExp2 = "\n*DEVSITE [2012-2013]\n-Prestacao de servicos de\n montagem e manutencao de \n micros e consultoria     2/2   ";
@@ -177,7 +274,7 @@ function playerUpdate(){
 				y = 0;				
 			}
 			y++;
-			showFrame(p,[100, 180], 237, "         Experiencias\r\n", exp);	
+			showFrame(p,[100, 180], 999, "         Experiencias\r\n", exp);	
 		}
 		else{
 			if(hit % 2 != 0){details.onDown.add(move, this);

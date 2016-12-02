@@ -2,3 +2,10 @@
     font-family: 'arcade'; 
     src: url('../res/fonts/ARCADE_N.TTF'); /*URL to font*/
 }
+canvas {  
+	position: absolute;
+	top: 0px;
+	left: 0px; 
+	width: 100% !important; 
+	height: 100% !important;
+}
