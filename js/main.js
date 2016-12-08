@@ -161,6 +161,7 @@ function createPlayer(x,y,j,v){
 var y = 0;
 
 var tmp = 0;
+var tmp2 = 0;
 var hit_platflyer = false;
 var hit_fan = false;
 var teste;
@@ -175,15 +176,16 @@ function movePlatFlyer(){
 	tmp = 1;	
 }
 
-function moveLangs(){
-	if(tmp == 0){
-		var tween = game.add.tween(langs).to( { y:210 }, 500, Phaser.Easing.Linear.None, true);		
+function moveLangs(v_y){
+	if(tmp2 == 0){
+		var tween = game.add.tween(langs).to( { y:v_y }, 500, Phaser.Easing.Linear.None, true);		
 		tween.onComplete.add(function() { 
-			tmp = 0;			
+			tmp2 = 0;			
 		});
+	}else{
+		
 	}	
-	tmp = 1;	
-	//console.log(tmp);
+	tmp2 = 1;	
 }
 
 
@@ -197,39 +199,58 @@ function playerUpdate(){
 		ff1.body.velocity.y = -25;
 		ff2.body.velocity.y = -20;
 		ff3.body.velocity.y = -15;
+		hit_fan = true;
 		
 	});
  	game.physics.arcade.collide(players, platforms, function(a, b){
+		
 		if(b.key == 'flyer_gap'){
 			teste = b;			
 			hit_platflyer = true;
+			hit_fan = false;
 			b.body.velocity.y = -100;
 			b.body.velocity.x = 100;			
 			if(Math.round(b.body.y) < 750 ){
 				b.body.velocity.y = 0;
-				if(Math.round(b.body.x) > 480){
-					hit_fan = true;
+				if(Math.round(b.body.x) > 480){					
 					b.body.velocity.x = 0;				
 				}			    
 			}			
-		}else{
+		}else{			
 			hit_platflyer = false;
-		}	
+			hit_fan = false
+		}
+		
 	});	
 	
 	if(hit_fan){
 		try{
-			moveLangs();
+			moveLangs(250);
 		}catch(e){}
+	}else{
+		moveLangs(-250);
+		ff2.body.velocity.y = 0;
+		ff2.body.velocity.y = 0;
+		ff3.body.velocity.y = 0;
+		game.add.tween(ff1).to( { y:690 }, 500, Phaser.Easing.Linear.None, true)
+		game.add.tween(ff2).to( { y:690 }, 500, Phaser.Easing.Linear.None, true);
+		game.add.tween(ff3).to( { y:690 }, 500, Phaser.Easing.Linear.None, true);
+		
 	}
 	
 	if(!hit_platflyer){
 		try{
+			//console.log(tmp);
 			teste.body.velocity.x =0;
 			teste.body.velocity.y = 0;
 			movePlatFlyer();
 		}catch(e){
 		}
+		
+	}else{
+		
+		//moveLangs(-250);
+			
 		
 	}
 	
