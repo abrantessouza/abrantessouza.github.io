@@ -14,13 +14,13 @@ var ff1;
 var ff2;
 var ff3;
 var intro;
+var contact_screen;
 
 
 
 function preload() {
 	game.load.audio('jump',['res/jump.mp3','res/jump.ogg']);
-	game.load.audio('music',['res/music.mp3','res/music.ogg']);
-	//game.load.image('tux', 'res/tux.png');
+	game.load.audio('music',['res/music.mp3','res/music.ogg']);	
 	game.load.spritesheet('tux', 'res/sprite_teste.png', 67, 85, 6);
 	game.load.spritesheet('flyer_fan', 'res/fan_flyers.png', 69.5, 49, 6);
 	game.load.image('flyer_gap', 'res/flyergap.png');
@@ -34,6 +34,7 @@ function preload() {
 	game.load.image('rio_2016', 'res/rio_2016.png');
 	game.load.image('frame', 'res/frame.png');
 	game.load.image('intro', 'res/intro.png');
+	game.load.image('contact_screen', 'res/contact_screen.png');
 	game.load.bitmapFont('carrier_command', 'res/fonts/carrier_command.png', 'res/fonts/carrier_command.xml');
 	
 }
@@ -97,10 +98,14 @@ function create() {
 	frame = floatFrames.create(100, game.world.width/2 - 930 , 'frame');
 	frame.scale.setTo(1.68,4.3);
 	
-	details = game.input.keyboard.addKey(Phaser.Keyboard.D);	
+	details = game.input.keyboard.addKey(Phaser.Keyboard.D);
+	
+	contact_screen = game.add.image(-1000, 1000,'contact_screen');
 	
 	langs = game.add.sprite(200,  -600, 'languages');
 	langs.scale.setTo(1.38);
+	
+	
 }
 
 var hit  = 0;
@@ -115,8 +120,13 @@ function move (){
 }
 
 
+var show_contact = false;
+
+
+
 function update() {
-	playerUpdate();	
+	playerUpdate();
+	
 	game.world.bringToTop(langs);
 	game.world.bringToTop(platforms);
 	game.world.bringToTop(players);
@@ -168,6 +178,7 @@ var y = 0;
 
 var tmp = 0;
 var tmp2 = 0;
+var tmp3 = 0;
 var hit_platflyer = false;
 var hit_fan = false;
 var teste;
@@ -194,6 +205,20 @@ function moveLangs(v_y){
 	tmp2 = 1;	
 }
 
+function screen_contact(v_x, v_y){	
+	if(tmp3 == 0){
+		var tween = game.add.tween(contact_screen).to( { y:v_y , x: v_x}, 1000, Phaser.Easing.Linear.None, true);		
+		tween.onComplete.add(function() { 
+			tmp3 = 0;			
+		});
+	}else{
+		
+	}	
+	tmp3 = 1;
+	
+}
+
+
 
 
 
@@ -211,6 +236,7 @@ function playerUpdate(){
 		}
 		
 		if(p.y <= 125){
+			
 			if(p.x >= 683 && p.x <= 750){
 				
 			}	
@@ -220,9 +246,8 @@ function playerUpdate(){
 		if(ff1.body.y <= 210){			
 			ff1.body.velocity.y = 0;
 			ff2.body.velocity.y = 0;
-			ff3.body.velocity.y = 0;	
-			//game.add.tween(frame).to( { y: Math.round(p.body.y) }, 1000, Phaser.Easing.Linear.None, true);
-				
+			ff3.body.velocity.y = 0;
+			screen_contact(p.x/2 - 110, p.y + 10);
 			
 		}
 		
@@ -252,6 +277,8 @@ function playerUpdate(){
 		
 	});	
 	//console.log(hit_fan);
+	
+	
 	if(!hit_fan){
 		
 		moveLangs(-500);		
@@ -290,12 +317,11 @@ function playerUpdate(){
 			p.animations.stop();
 		}
 		p.body.velocity.x = 0;
-		debugText.text = "{x:"+Math.round(p.x)+" | "+"y:"+Math.round(p.y)+" | frameY: "+Math.round(frame.y)+"}";
+		/*debugText.text = "{x:"+Math.round(p.x)+" | "+"y:"+Math.round(p.y)+" | frameY: "+Math.round(frame.y)+"}";
 		debugText.x = p.x - 280;
-		debugText.y = p.y-160;
+		debugText.y = p.y-160;*/
 		
-		
-		
+				
 		if(p.x > 647 && p.x < 801){
 			movY = 1400;
 			frame.x = p.x - 300;
@@ -394,6 +420,8 @@ var createIntro = function (touch){
 	}
 	
 }
+
+
 
 
 function createPlatform(){
