@@ -3,7 +3,7 @@ var os = navigator.userAgent.toLowerCase();
 var isAndroid = os.indexOf("android") > -1; //&& ua.indexOf("mobile");
 if(isAndroid) {
  alert("Desculpe, esse navegador ainda não é suportado para esse app!!")
- window.location("https://br.linkedin.com/in/thiagoabrantescsouza");
+ window.location="https://br.linkedin.com/in/thiagoabrantescsouza";
 }else{
 	document.title=">>Thiago Abrantes";
 	var game = new Phaser.Game(800 , 600, Phaser.CANVAS, '', { preload: preload, create: create, update: update });
