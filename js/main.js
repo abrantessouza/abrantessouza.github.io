@@ -13,6 +13,7 @@ var langs;
 var ff1;
 var ff2;
 var ff3;
+var intro;
 
 
 
@@ -30,7 +31,9 @@ function preload() {
 	game.load.image('capelo', 'res/capelo.png');
 	game.load.image('xp', 'res/xp.png');
 	game.load.image('ground', 'res/ground.png');
+	game.load.image('rio_2016', 'res/rio_2016.png');
 	game.load.image('frame', 'res/frame.png');
+	game.load.image('intro', 'res/intro.png');
 	game.load.bitmapFont('carrier_command', 'res/fonts/carrier_command.png', 'res/fonts/carrier_command.xml');
 	
 }
@@ -57,6 +60,8 @@ function create() {
 	fan_flyers = game.add.group();
 	fan_flyers.enableBody = true;
 	
+	intro = game.add.group();
+	
 	
 		
 	objectsBackground = game.add.group();
@@ -70,7 +75,7 @@ function create() {
 	ff3 = createFanFlyer(695 + 90 * 2, 750);	
 	
 		
-		
+	createIntro();
 			
 	var style = { font: "bold 20px arcade", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 
@@ -116,7 +121,8 @@ function update() {
 	game.world.bringToTop(platforms);
 	game.world.bringToTop(players);
 	game.world.bringToTop(fan_flyers);
-	game.world.bringToTop(floatFrames);	
+	game.world.bringToTop(floatFrames);
+	game.world.bringToTop(intro);	
 	game.world.bringToTop(detailText);
 }
 
@@ -178,7 +184,7 @@ function movePlatFlyer(){
 
 function moveLangs(v_y){
 	if(tmp2 == 0){
-		var tween = game.add.tween(langs).to( { y:v_y }, 500, Phaser.Easing.Linear.None, true);		
+		var tween = game.add.tween(langs).to( { y:v_y }, 12500, Phaser.Easing.Linear.None, true);		
 		tween.onComplete.add(function() { 
 			tmp2 = 0;			
 		});
@@ -199,7 +205,30 @@ function playerUpdate(){
 		ff1.body.velocity.y = -25;
 		ff2.body.velocity.y = -20;
 		ff3.body.velocity.y = -15;
+		
+		if(p.y <= 600){
+			moveLangs(1000);
+		}
+		
+		if(p.y <= 125){
+			if(p.x >= 683 && p.x <= 750){
+				
+			}	
+		}
+		
+		
+		if(ff1.body.y <= 210){			
+			ff1.body.velocity.y = 0;
+			ff2.body.velocity.y = 0;
+			ff3.body.velocity.y = 0;	
+			//game.add.tween(frame).to( { y: Math.round(p.body.y) }, 1000, Phaser.Easing.Linear.None, true);
+				
+			
+		}
+		
+		
 		hit_fan = true;
+			
 		
 	});
  	game.physics.arcade.collide(players, platforms, function(a, b){
@@ -222,13 +251,10 @@ function playerUpdate(){
 		}
 		
 	});	
-	
-	if(hit_fan){
-		try{
-			moveLangs(250);
-		}catch(e){}
-	}else{
-		moveLangs(-250);
+	//console.log(hit_fan);
+	if(!hit_fan){
+		
+		moveLangs(-500);		
 		ff2.body.velocity.y = 0;
 		ff2.body.velocity.y = 0;
 		ff3.body.velocity.y = 0;
@@ -274,11 +300,14 @@ function playerUpdate(){
 			movY = 1400;
 			frame.x = p.x - 300;
 			showFrame(p,[647, 801], 1241,"           SOBRE MIM\r\n", "\nSou Thiago Abrantes e tenho \n31 anos, Brasileiro, Carioca \nda Gema, Casado e amante\nde tecnologia." );		
-		}else if(p.x > 300 && p.x < 418){
+		}
+		
+		else if(p.x > 300 && p.x < 418){
 			movY = 1300;
 			frame.x = p.x - 300;
 			showFrame(p,[300, 418], 1139, "      Aonde sou graduado\r\n", "\n*UNESA: Tecnologia em \nInformatica p/ Internet (2015)\n\n*UNESA: Bacharel em \nTurismo (2010) " );		
 		}
+		
 		else if(p.x > 100 && p.x < 180){			
 			movY = 1200;
 			frame.x = p.x - 80;
@@ -296,9 +325,10 @@ function playerUpdate(){
 			}
 			y++;
 			showFrame(p,[100, 180], 999, "         Experiencias\r\n", exp);	
-		}
+		}		
 		else{
-			if(hit % 2 != 0){details.onDown.add(move, this);
+			if(hit % 2 != 0){
+				details.onDown.add(move, this);
 				game.add.tween(frame).to( { y: '-'+movY }, 1000, Phaser.Easing.Linear.None, true);
 				game.add.tween(detailText).to( { y: '-'+movY }, 1000, Phaser.Easing.Linear.None, true);		
 				hit = 0;
@@ -308,6 +338,7 @@ function playerUpdate(){
 		}
 		
 		if(cursors.left.isDown){
+			
 			p.body.velocity.x =  -p.v;
 			p.animations.play('left');		
 			
@@ -322,14 +353,15 @@ function playerUpdate(){
 		if(cursors.up.isDown && p.body.touching.down ){
 			var snd = game.add.audio("jump");
 			snd.play();
-			p.body.velocity.y = p.jump;					
+			p.body.velocity.y = p.jump;
+			createIntro(cursors);
 		}
 		
 	});
 }
 
 
-function showFrame(p,x,y,text1,text2)
+function showFrame(p,x,y,text1,text2,loadImage)
 {
 	if(p.x > x[0] && p.x < x[1]){
 			if(Math.round(p.y) == y ){				
@@ -343,12 +375,25 @@ function showFrame(p,x,y,text1,text2)
 				detailText.text += text2;
 				
 				detailText.y = frame.y + 90;
-				detailText.x = frame.x + 40;			
+				detailText.x = frame.x + 40;
+				
+				if(typeof(loadImage) == 'object'){
+					genImage = game.create(110 + 240, game.world.height - 400, loadImage[0]);				
+				}
+				
 				
 			}		 
 		}	
 }
 
+var createIntro = function (touch){
+	if(touch == undefined){
+		intro.create(100,950,'intro');
+	}else{
+		game.add.tween(intro).to( { y: '-1000' }, 1000, Phaser.Easing.Linear.None, true);		
+	}
+	
+}
 
 
 function createPlatform(){
