@@ -33,7 +33,6 @@ function preload() {
 	game.load.image('capelo', 'res/capelo.png');
 	game.load.image('xp', 'res/xp.png');
 	game.load.image('ground', 'res/ground.png');
-	game.load.image('rio_2016', 'res/rio_2016.png');
 	game.load.image('frame', 'res/frame.png');
 	game.load.image('intro', 'res/intro.png');
 	game.load.image('contact_screen', 'res/contact_screen.png');
