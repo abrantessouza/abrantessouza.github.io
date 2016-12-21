@@ -3,7 +3,15 @@
 <head>
   <title>>>Thiago Abrantes</title>
   <link rel="stylesheet" type="text/css" href="css/custom.css">
-  <script src="lib/phaser.min.js"></script>
+<script>
+	var os = navigator.userAgent.toLowerCase();
+	var isAndroid = os.indexOf("android") > -1; //&& ua.indexOf("mobile");
+	if(isAndroid) {
+		alert("Desculpe, esse navegador ainda não é suportado para esse app!!")
+		window.location("https://br.linkedin.com/in/thiagoabrantescsouza");
+	}
+</script>
+  <script src="lib/phaser.min.js"></script>	
   <script  type="text/javascript" src="js/main.js"></script>
 </head>
 <body>
