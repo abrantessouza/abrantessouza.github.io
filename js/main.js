@@ -335,7 +335,7 @@ function playerUpdate(){
 		if(p.x > 647 && p.x < 801){
 			movY = 1400;
 			frame.x = p.x - 300;
-			showFrame(p,[647, 801], 1241,"           SOBRE MIM\r\n", "\nSou Thiago Abrantes e tenho \n31 anos, Brasileiro, Carioca \nda Gema, Casado e amante\nde tecnologia." );		
+			showFrame(p,[647, 801], 1241,"           SOBRE MIM\r\n", "\nSou Thiago Abrantes e tenho \n34 anos, Brasileiro, Carioca \nda Gema, Casado e amante\nde tecnologia." );		
 		}
 		
 		else if(p.x > 300 && p.x < 418){
@@ -347,8 +347,9 @@ function playerUpdate(){
 		else if(p.x > 100 && p.x < 180){			
 			movY = 1200;
 			frame.x = p.x - 80;
-			var textExp1 = "\n*LABORATORIO DE CONTROLE DE \n DOPAGEM(LBCD) [2011 - 2016]\n-Web Developer Front-End & \n Backend p/ intranet \n-Treinamento de pessoal \n para utilizacao dos sistemas \n-Montagem & Manutencao de \n Micro-Computadores   1/2";
-			var textExp2 = "\n*DEVSITE [2012-2013]\n-Prestacao de servicos de\n montagem e manutencao de \n micros e consultoria     2/2   ";
+			var textExp2 = "\n*LABORATORIO DE CONTROLE DE \n DOPAGEM(LBCD) \n-Web Developer Fullstack \n-Montagem & Manutencao de \n Micro-Computadores  ";
+			//var textExp2 = "\n*DEVSITE \n-Prestacao de servicos de\n montagem e manutencao de \n micros e consultoria     ";
+			var textExp1 = "\n*INTERFUSAO TI\n-Consultor tecnico e developer \nem sistemas LIMS."
 			var exp;
 			var arrText = [textExp1, textExp2];
 			exp = arrText[0];
